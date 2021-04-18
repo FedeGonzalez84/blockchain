@@ -1,12 +1,10 @@
-/*
-    Esta API debe pensarse como un unico nodo corriendo en la red blockchain, debido a eso, al principio
-    se le asigna una nodeAddress, de manera tal, de tener una direccion donde enviar la recompensa obteni
-    da por el minado de un bloque.
-*/
 var express = require('express');
 var app = express();
 const Blockchain = require('./blockchain');
 const {v4: uuidv4} = require('uuid'); // Crea un id unico utilizado como direccion del nodo
+
+// Accedo a traves de nodemon (ver package.json)
+const port = process.argv[2];
 
 // Se le quitan los - para que sea un unico bloque de direccion
 const nodeAddress = uuidv4().split('-').join('');
@@ -54,6 +52,6 @@ app.get('/mine', (req, res) => {
     });
 });
 // Node esta escuchando en el puerto 3000
-app.listen(3000, () => {
-    console.log('Listening on port 3000');
+app.listen(port, () => {
+    console.log(`Listening on port ${port}..`);
 });

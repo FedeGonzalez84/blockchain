@@ -1,9 +1,12 @@
 const sha256 = require('sha256');
+const currentNodeUrl = process.argv[3]; // accedo a la url del nodo (ver package.json, nodemon)
 
 function Blockchain(){
     this.chain = [];
     this.pendingTransactions = [];
-
+    
+    this.currentNodeUrl = currentNodeUrl;
+    this.networkNodes = [];
     // Crear el bloque genesis
     this.createNewBlock(100, '0','0');
 }
