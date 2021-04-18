@@ -28,11 +28,11 @@ Blockchain.prototype.getLastBlock = function(){
     return this.chain[this.chain.length-1];
 }
 // Crear una transaccion
-Blockchain.prototype.createNewTransaction = function(amount, sender, recepient){
+Blockchain.prototype.createNewTransaction = function(amount, sender, recipient){
     const newTransaction = {
         amount: amount,
         sender: sender,
-        recepient: recepient
+        recipient: recipient
     } 
     this.pendingTransactions.push(newTransaction);
     // Devuelve el numero de bloque el cual debe almacenar la transaccion
@@ -53,7 +53,6 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
     while(hash.substring(0,4) !== '0000'){
         nonce++;
         hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
-        console.log(hash);
     }
     return nonce;
 }
