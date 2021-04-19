@@ -3,7 +3,7 @@ var app = express();
 const Blockchain = require('./blockchain');
 const {v4: uuidv4} = require('uuid'); // Crea un id unico utilizado como direccion del nodo
 
-// Accedo a traves de nodemon (ver package.json)
+// Accedo a traves de nodemon (ver package.json, cuando se ingresa el comando nodemon)
 const port = process.argv[2];
 
 // Se le quitan los - para que sea un unico bloque de direccion
