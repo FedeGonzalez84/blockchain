@@ -58,50 +58,55 @@ app.get('/mine', (req, res) => {
 app.post('/register-and-broadcast-node', (req, res) => {
     const newNodeUrl = req.body.newNodeUrl;
     // Registro el nuevo nodo en este nodo
-    if(bitcoin.networkNodes.indexOf(newNodeUrl == -1 ))bitcoin.networkNodes.push(newNodeUrl);
+    if(bitcoin.networkNodes.indexOf(newNodeUrl) == -1 )bitcoin.networkNodes.push(newNodeUrl);
     
     // Pone todos los request en este arrays, ya que es asincronico 
-    const regNodePromises = [];
+    const regNodesPromises = [];
 
     // Realizo un broadcast a los otros nodos
-    bitcoin.networkNodes.forEach(netWorkNode => {
+    bitcoin.networkNodes.forEach(networkNodeUrl => {
         const requestOptions = {
-            uri: netWorkNode.url + '/register-node',
+            uri: networkNodeUrl + '/register-node',
             method: 'POST',
             body: { newNodeUrl: newNodeUrl},
             json: true
         }
-        regNodePromises.push(rp(options));
+        regNodesPromises.push(rp(requestOptions));
     });
     // Ejecuta una promesa una vez que fueron ejecutadas las peticiones
-    Promise.all(regNodePromises)
-        .then( data => {
-            const bulkRegisterOptions = {
-                uri: newNodeUrl + '/register-nodes-bulk',
-                method: 'POST',
-                body: { allNetWorkNodes: [... bitcoin.networkNodes, bitcoin.currentNodeUrl]},
-                json: true
-            };
-            return rp(bulkRegisterOptions);
-        })
-        .then( data => {
-            res.json({ note: 'New node registered with network sucessfully'})
-        });
+    Promise.all(regNodesPromises)
+	.then(data => {
+		const bulkRegisterOptions = {
+			uri: newNodeUrl + '/register-nodes-bulk',
+			method: 'POST',
+			body: { allNetworkNodes: [ ...bitcoin.networkNodes, bitcoin.currentNodeUrl ] },
+			json: true
+		};
+
+		return rp(bulkRegisterOptions);
+	})
+	.then(data => {
+		res.json({ note: 'New node registered with network successfully.' });
+	});
 });
 // Registrar un nodo nuevo, en cada uno de los nodos de la red
 app.post('/register-node', (req, res) => {
-    const newNodeUrl = req.body.newNodeUrl;
-    const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(newNodeUrl) == -1;
-    const notCurrentNode = bitcoin.currentNodeUrl !== newNodeUrl;
-    if(nodeNotAlreadyPresent && notCurrentNode) bitcoin.networkNodes.push(newNodeUrl);
-    res.json({ note: 'New node register sucessfully.'});
+	const newNodeUrl = req.body.newNodeUrl;
+	const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(newNodeUrl) == -1;
+	const notCurrentNode = bitcoin.currentNodeUrl !== newNodeUrl;
+	if (nodeNotAlreadyPresent && notCurrentNode) bitcoin.networkNodes.push(newNodeUrl);
+	res.json({ note: 'New node registered successfully.' });
 });
 // Envia informacion de todos los nodos de la red (al nodo nuevo)
 app.post('/register-nodes-bulk', (req, res) => {
-    const allNetworkNodes = req.body.allNetWorkNodes;
-    allNetWorkNodes.forEach( netWorkNodeUrl => {
-        bitcoin.netWorkNodes.push(netWorkNodeUrl);
-    });
+	const allNetworkNodes = req.body.allNetworkNodes;
+	allNetworkNodes.forEach(networkNodeUrl => {
+		const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(networkNodeUrl) == -1;
+		const notCurrentNode = bitcoin.currentNodeUrl !== networkNodeUrl;
+		if (nodeNotAlreadyPresent && notCurrentNode) bitcoin.networkNodes.push(networkNodeUrl);
+	});
+
+	res.json({ note: 'Bulk registration successful.' });
 });
 // Node esta escuchando en el puerto 3000
 app.listen(port, () => {
