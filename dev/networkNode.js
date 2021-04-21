@@ -55,6 +55,10 @@ app.get('/mine', (req, res) => {
 });
 // Registrar un nodo (en un nodo en particular) y hacer un broadcast a toda la red
 // (a los otros nodos)
+// 1--> Se almacena en el nodo actual la direccion del nuevo nodo
+// 2--> Se hace mediante el endpoint /register-node un broadcast con la direccion del nuevo nodo
+// 3--> Se envia al nuevo nodo, las direcciones de todos los nodos de la red 
+
 app.post('/register-and-broadcast-node', (req, res) => {
     const newNodeUrl = req.body.newNodeUrl;
     // Registro el nuevo nodo en el nodo actual
