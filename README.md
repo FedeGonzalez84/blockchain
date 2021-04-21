@@ -1,7 +1,7 @@
 # Blockchain (EN PROGRESO)
 Se realiza paso a paso una blockchain utilizando Javascript:
  1. Crea la estructura de la blockchain.
- 2. Crea una api para consumir dicha blockhain.
+ 2. Crea una api para consumir dicha Blockchain.
  3. Crea una red descentralizada.
 
 ## Diagrama de comunicación de un nuevo nodo a la red
