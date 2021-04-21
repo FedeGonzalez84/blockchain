@@ -57,13 +57,13 @@ app.get('/mine', (req, res) => {
 // (a los otros nodos)
 app.post('/register-and-broadcast-node', (req, res) => {
     const newNodeUrl = req.body.newNodeUrl;
-    // Registro el nuevo nodo en este nodo
+    // Registro el nuevo nodo en el nodo actual
     if(bitcoin.networkNodes.indexOf(newNodeUrl) == -1 )bitcoin.networkNodes.push(newNodeUrl);
     
     // Pone todos los request en este arrays, ya que es asincronico 
     const regNodesPromises = [];
 
-    // Realizo un broadcast a los otros nodos
+    // Realizo un broadcast a los otros nodos informando el nodo nuevo
     bitcoin.networkNodes.forEach(networkNodeUrl => {
         const requestOptions = {
             uri: networkNodeUrl + '/register-node',
@@ -78,8 +78,9 @@ app.post('/register-and-broadcast-node', (req, res) => {
 	.then(data => {
 		const bulkRegisterOptions = {
 			uri: newNodeUrl + '/register-nodes-bulk',
-			method: 'POST',
-			body: { allNetworkNodes: [ ...bitcoin.networkNodes, bitcoin.currentNodeUrl ] },
+			method: 'POST', 
+            // Envia todos los nodos y el nodo actual
+			body: { allNetworkNodes: [ ...bitcoin.networkNodes, bitcoin.currentNodeUrl ] }, 
 			json: true
 		};
 
