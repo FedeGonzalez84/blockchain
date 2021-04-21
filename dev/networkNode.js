@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 const Blockchain = require('./blockchain');
 const {v4: uuidv4} = require('uuid'); // Crea un id unico utilizado como direccion del nodo
+const rp = require('request-promise'); // para hacer peticiones a otros endpoints
+
 
 // Accedo a traves de nodemon (ver package.json, cuando se ingresa el comando nodemon)
 const port = process.argv[2];
@@ -49,6 +51,56 @@ app.get('/mine', (req, res) => {
     res.json({
         note: "New Block mined successfully",
         block: newBlock
+    });
+});
+// Registrar un nodo (en un nodo en particular) y hacer un broadcast a toda la red
+// (a los otros nodos)
+app.post('/register-and-broadcast-node', (req, res) => {
+    const newNodeUrl = req.body.newNodeUrl;
+    // Registro el nuevo nodo en este nodo
+    if(bitcoin.networkNodes.indexOf(newNodeUrl == -1 ))bitcoin.networkNodes.push(newNodeUrl);
+    
+    // Pone todos los request en este arrays, ya que es asincronico 
+    const regNodePromises = [];
+
+    // Realizo un broadcast a los otros nodos
+    bitcoin.networkNodes.forEach(netWorkNode => {
+        const requestOptions = {
+            uri: netWorkNode.url + '/register-node',
+            method: 'POST',
+            body: { newNodeUrl: newNodeUrl},
+            json: true
+        }
+        regNodePromises.push(rp(options));
+    });
+    // Ejecuta una promesa una vez que fueron ejecutadas las peticiones
+    Promise.all(regNodePromises)
+        .then( data => {
+            const bulkRegisterOptions = {
+                uri: newNodeUrl + '/register-nodes-bulk',
+                method: 'POST',
+                body: { allNetWorkNodes: [... bitcoin.networkNodes, bitcoin.currentNodeUrl]},
+                json: true
+            };
+            return rp(bulkRegisterOptions);
+        })
+        .then( data => {
+            res.json({ note: 'New node registered with network sucessfully'})
+        });
+});
+// Registrar un nodo nuevo, en cada uno de los nodos de la red
+app.post('/register-node', (req, res) => {
+    const newNodeUrl = req.body.newNodeUrl;
+    const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(newNodeUrl) == -1;
+    const notCurrentNode = bitcoin.currentNodeUrl !== newNodeUrl;
+    if(nodeNotAlreadyPresent && notCurrentNode) bitcoin.networkNodes.push(newNodeUrl);
+    res.json({ note: 'New node register sucessfully.'});
+});
+// Envia informacion de todos los nodos de la red (al nodo nuevo)
+app.post('/register-nodes-bulk', (req, res) => {
+    const allNetworkNodes = req.body.allNetWorkNodes;
+    allNetWorkNodes.forEach( netWorkNodeUrl => {
+        bitcoin.netWorkNodes.push(netWorkNodeUrl);
     });
 });
 // Node esta escuchando en el puerto 3000
