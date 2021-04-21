@@ -17,11 +17,12 @@ const bitcoin = new Blockchain();
 // Permite analizar al cuerpo de la peticion
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
-
+// ---------------------------------------------------------------------
 // Trae la bockchain completa
 app.get('/blockchain', (req, res) => {
     res.send(bitcoin);
 });
+// ---------------------------------------------------------------------
 // Envia una transaccion
 app.post('/transaction', (req, res) => {
     const blockIndex = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
@@ -29,6 +30,7 @@ app.post('/transaction', (req, res) => {
         note: `Transaction will be added in block ${blockIndex}.`
     });
 });
+// ---------------------------------------------------------------------
 // Mina un nuevo bloque
 app.get('/mine', (req, res) => {
     // Trae el ultimo bloque de la cadena
@@ -53,6 +55,7 @@ app.get('/mine', (req, res) => {
         block: newBlock
     });
 });
+// ---------------------------------------------------------------------
 // Registrar un nodo (en un nodo en particular) y hacer un broadcast a toda la red
 // (a los otros nodos)
 // 1--> Se almacena en el nodo actual la direccion del nuevo nodo
@@ -94,6 +97,7 @@ app.post('/register-and-broadcast-node', (req, res) => {
 		res.json({ note: 'New node registered with network successfully.' });
 	});
 });
+// ---------------------------------------------------------------------
 // Registrar un nodo nuevo, en cada uno de los nodos de la red
 app.post('/register-node', (req, res) => {
 	const newNodeUrl = req.body.newNodeUrl;
@@ -102,6 +106,7 @@ app.post('/register-node', (req, res) => {
 	if (nodeNotAlreadyPresent && notCurrentNode) bitcoin.networkNodes.push(newNodeUrl);
 	res.json({ note: 'New node registered successfully.' });
 });
+// ---------------------------------------------------------------------
 // Envia informacion de todos los nodos de la red (al nodo nuevo)
 app.post('/register-nodes-bulk', (req, res) => {
 	const allNetworkNodes = req.body.allNetworkNodes;
@@ -113,6 +118,7 @@ app.post('/register-nodes-bulk', (req, res) => {
 
 	res.json({ note: 'Bulk registration successful.' });
 });
+// ---------------------------------------------------------------------
 // Node esta escuchando en el puerto 3000
 app.listen(port, () => {
     console.log(`Listening on port ${port}..`);

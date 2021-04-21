@@ -1,6 +1,6 @@
 const sha256 = require('sha256');
 const currentNodeUrl = process.argv[3]; // accedo a la url del nodo (ver package.json, nodemon)
-
+// ---------------------------------------------------------------------
 function Blockchain(){
     this.chain = [];
     this.pendingTransactions = [];
@@ -10,7 +10,7 @@ function Blockchain(){
     // Crear el bloque genesis
     this.createNewBlock(100, '0','0');
 }
-
+// ---------------------------------------------------------------------
 // Crear un bloque
 Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash){
     const newBlock = {
@@ -26,10 +26,12 @@ Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash){
 
     return newBlock;
 }
+// ---------------------------------------------------------------------
 // Obtener el ultimo bloque
 Blockchain.prototype.getLastBlock = function(){
     return this.chain[this.chain.length-1];
 }
+// ---------------------------------------------------------------------
 // Crear una transaccion
 Blockchain.prototype.createNewTransaction = function(amount, sender, recipient){
     const newTransaction = {
@@ -41,12 +43,14 @@ Blockchain.prototype.createNewTransaction = function(amount, sender, recipient){
     // Devuelve el numero de bloque el cual debe almacenar la transaccion
     return this.getLastBlock()['index'] + 1;
 }
+// ---------------------------------------------------------------------
 // Hashea el bloque
 Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, nonce){
     const dataAsString = previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
     const hash = sha256(dataAsString);
     return hash; 
 }
+// ---------------------------------------------------------------------
 // Prueba de trabajo: prueba la legitimidad del bloque creado
 Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData){
     // Se hashea reiteradas veces el bloque hasta encontrar un hash que comience con '0000ADPFINUWOIE' 4 ceros
@@ -59,5 +63,5 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
     }
     return nonce;
 }
-
+// ---------------------------------------------------------------------
 module.exports = Blockchain;
