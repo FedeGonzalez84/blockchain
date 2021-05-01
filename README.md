@@ -11,7 +11,5 @@ Se realiza paso a paso una blockchain utilizando Javascript:
 ## Sincronización de una transacción con todos los nodos de la red
 ![Captura de Pantalla 2021-05-01 a la(s) 09 22 14](https://user-images.githubusercontent.com/28599261/116782362-fb052c00-aa5e-11eb-9f55-3f90815b0961.png)
 
-
-
-
- 
+## Sincronizacion de un bloque minado con todos los nodos de la red
+![Captura de Pantalla 2021-05-01 a la(s) 10 20 10](https://user-images.githubusercontent.com/28599261/116783848-6d7a0a00-aa67-11eb-8449-230b22b83d1e.png)
